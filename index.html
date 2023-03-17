@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<head>
+  <title>CHAT APP</title>
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+</head>
+<body style="background-color: #F5EEE6;">
+  <div class="px-4 py-5 my-5 text-center" style="margin: auto;width: 50%;">
+    <h1 class="display-5 fw-bold" style="color: #C86B85;text-shadow: 2px 2px #000;">Whatsapp</h1>
+    </br>
+    <div class="row" style="background-color: #F3E1E1; height: auto; padding:10px">
+      <div id = "box-message">
+        
+      </div>
+    </div>
+    <div id = "box-input">
+      <input type="text" class="form-control" id="form-message" placeholder="Enter Message here and click enter">
+    </div>
+  </div>
+</body>
+<script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+  <script>
+
+    // Enable pusher logging - don't include this in production
+    Pusher.logToConsole = true;
+
+    var pusher = new Pusher('f074590e163d64f9e82c', {
+      cluster: 'ap1'
+    });
+
+    var channel = pusher.subscribe('chat');
+    channel.bind('message', function(data) {
+      // alert(JSON.stringify(data));
+
+      console.log(data);
+      console.log(data.message);
+      var html = `<div class="col-lg-6 mx-auto">
+                    <div class="card text-white bg-success mb-3">
+                      <div class="card-header" style="color: #F5EEE6;text-shadow: 2px 2px #000;">`+data.username+`</div>
+                      <div class="card-body">
+                        <p class="card-text">`+data.message+`</p>
+                      </div>
+                    </div>
+                  </div>`
+      var box = document.getElementById('box-message');
+      box.insertAdjacentHTML('beforeend', html);
+    });
+
+    $(function () {
+        $('#form-message').keypress(function(e) {
+            if(e.which == 13) {
+              var message = $("#form-message").val();
+
+              var chat = {
+                  username: "Admin",
+                  message:message
+              }
+              console.log(chat);
+
+              $.ajax({
+                  url: window.location.href + "api/SendMessages",
+                  type: 'POST',
+                  dataType: 'json',
+                  contentType: 'application/json',
+                  data: JSON.stringify(chat),
+                  success: function(resp) {
+                      console.log("api resp-->", resp);
+                  },
+                  error: function(err) {
+                      console.log("err api-->", err);
+                  }
+              });
+
+
+            }
+        });
+    });
+  </script>
