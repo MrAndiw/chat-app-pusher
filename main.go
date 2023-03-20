@@ -42,7 +42,6 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Routes
-	e.GET("/api/messages", SendMessage)
 	e.POST("/api/SendMessages", SendMessagePost)
 
 	renderer := &TemplateRenderer{
@@ -70,39 +69,6 @@ type ReqMessage struct {
 type ResMessage struct {
 	Username string `json:"username"`
 	Message  string `json:"message"`
-}
-
-// Handler
-func SendMessage(c echo.Context) error {
-
-	username := c.QueryParam("username")
-	message := c.QueryParam("message")
-
-	// config pusher
-	pusherClient := pusher.Client{
-		AppID:   "1483564",
-		Key:     "f074590e163d64f9e82c",
-		Secret:  "c02da4f12d6c3f8ff806",
-		Cluster: "ap1",
-		Secure:  true,
-	}
-
-	resp := ResMessage{
-		Username: username,
-		Message:  message,
-	}
-	fmt.Println(resp)
-
-	b, err := json.Marshal(resp)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	// send pusher
-	fmt.Println(string(b))
-	pusherClient.Trigger("chat", "message", string(b))
-
-	return c.String(http.StatusOK, string(b))
 }
 
 // Handler
