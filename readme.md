@@ -7,3 +7,7 @@
 # How To :
 
 go run main.go
+
+# Demo :
+
+https://chat-app-pusher-production.up.railway.app/
